@@ -44,7 +44,10 @@ createApp({
         return {
             fps:55,ms:2,
             x:0,y:0,
-            r:0,g:0,b:0
+            r:0,g:0,b:0,
+            lat:0,lon:0,
+            dx:0,dy:0,dz:0,
+            elapsed:0,
         }
     },
     mounted() {
@@ -57,6 +60,13 @@ createApp({
             this.r=color[0].toFixed(2);
             this.g=color[1].toFixed(2);
             this.b=color[2].toFixed(2);
+
+            let angle=perspective(this.x,this.y);
+            this.lat=angle.lat .toFixed(2);
+            this.lon=angle.lon .toFixed(2);
+            this.dx=angle.dir.x.toFixed(2);
+            this.dy=angle.dir.y.toFixed(2);
+            this.dz=angle.dir.z.toFixed(2);
         }.bind(this));
         function loop() {
             if (!paused) {
@@ -84,6 +94,9 @@ createApp({
         }
 
         // loop.bind(this)();
+        let start=Date.now();
         while (loop());
+        let end=Date.now();
+        this.elapsed=end-start;
     }
 }).mount('#data')
