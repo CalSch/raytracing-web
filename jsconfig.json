@@ -1,0 +1,3 @@
+{
+    "files": ["gfx.js","canvas.js","collision.js","math.js","coords.js"]
+}
