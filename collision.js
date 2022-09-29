@@ -1,3 +1,5 @@
+// Made by hujianzhe on GitHub (https://github.com/hujianzhe/3D-collision-detection)
+
 var CCT = {
 	COLLISION_BODY_RAY : 0,
 	COLLISION_BODY_AABB : 1,
