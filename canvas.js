@@ -47,6 +47,9 @@ createApp({
             r:0,g:0,b:0,
             lat:0,lon:0,
             dx:0,dy:0,dz:0,
+
+            hit: {},
+
             elapsed:0,
         }
     },
@@ -56,7 +59,8 @@ createApp({
             this.x=Math.floor(ev.offsetX/wscale);
             this.y=Math.floor(ev.offsetY/hscale);
             // let color=ctx.getImageData(this.x*wscale,this.y*hscale,1,1).data;
-            let color=pix(this.x,this.y);
+            let data=pixData(this.x,this.y);
+            let color=data.color;
             this.r=color[0].toFixed(2);
             this.g=color[1].toFixed(2);
             this.b=color[2].toFixed(2);
@@ -67,11 +71,13 @@ createApp({
             this.dx=angle.dir.x.toFixed(2);
             this.dy=angle.dir.y.toFixed(2);
             this.dz=angle.dir.z.toFixed(2);
+
+            this.hit=data.hit;
         }.bind(this));
         function loop() {
             if (!paused) {
-                let color = pix(currentX, currentY);
-                ctx.fillStyle = `rgb(${Math.abs(color[0])},${Math.abs(color[1])},${Math.abs(color[2])})`;
+                let color = pixColor(currentX, currentY);
+                ctx.fillStyle = `rgb(${color[0]},${color[1]},${color[2]})`;
                 ctx.fillRect(currentX * wscale, currentY * hscale, wscale, hscale);
 
                 currentX++;

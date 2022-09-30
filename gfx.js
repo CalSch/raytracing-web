@@ -10,8 +10,8 @@ let xright=180-  45;
 let yleft =     -45;
 let yright=      45;
 
-let s=new CCT.Sphere(new CCT.Vector3(0,0,5),2);
-// let f=new CCT.Plane(new CCT.Vector3(),new CCT.Vector3());
+// let s=new CCT.Sphere(new CCT.Vector3(0,0,5),2);
+let s=new CCT.Plane(new CCT.Vector3(0,-10,0),new CCT.Vector3(0,1,0));
 
 function ortho(x,y) {
     return new CCT.Vector3(
@@ -34,16 +34,50 @@ function perspective(x,y) {
     ),lat,lon};
 }
 
-function pix(x,y) {
+/**
+ * 
+ * @param {*} x 
+ * @param {*} y 
+ * @returns {{
+ *  ray: {
+ *      pos: CCT.Vector3,
+ *      dir: CCT.Vector3
+ *      lat: Number,
+ *      lon: Number,
+ *  },
+ *  hit: {
+ *      hit_point: CCT.Vector3,
+ *      hit_normal: CCT.Vector3,
+ *      distance: Number,
+ *  },
+ *  color: Number[]
+ * }}
+ */
+function pixData(x,y) {
     let ray=new CCT.Ray(new CCT.Vector3(0,0,0));
     // let dir=new CCT.Vector3(0,0,1);
-    let dir=perspective(x,y).dir;
-    let hit=CCT.cast(ray,dir,s);
+    let projection=perspective(x,y);
+    let hit=CCT.cast(ray,projection.dir,s);
+
+    let color=[0,0,0];
 
     if (hit!==null) {
         let light=5-hit.distance;
-        let color=[50,40,230];
-        return [color[0]*light,color[1]*light,color[2]*light];
+        let objColor=[50,40,230];
+        color = [objColor[0]*light,objColor[1]*light,objColor[2]*light];
     }
-    return [0,0,0]
+    return {
+        ray: {
+            pos:ray,
+            dir:projection.dir,
+            lat:projection.lat,
+            lat:projection.lon,
+        },
+        hit,
+        color,
+    };
+}
+
+function pixColor(x,y) {
+    return pixData(x,y).color;
 }

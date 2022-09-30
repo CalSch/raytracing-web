@@ -5,14 +5,25 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>rtx 3080</title>
+
+    <style>
+        pre {
+            background-color: lightgrey;
+            border-radius: 5px;
+            padding: 5px;
+            font-size: 16px;
+            min-height: calc( 16px * 14 );
+        }
+    </style>
 </head>
 <body>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <div id="data">
-        <p>FPS: {{fps}} | MS: {{ms}}</p>
-        <p>pos: ( {{x}} , {{y}} )</p>
-        <p>color: ( {{r}}, {{g}} , {{b}} )</p>
-        <p>projection: ( {{lat}} , {{lon}} ) ( {{dx}} , {{dy}} , {{dz}} ) </p>
+        <p>FPS: <pre>{{fps}} | MS: {{ms}}</pre></p>
+        <p>pos: <pre>( {{x}} , {{y}} )</pre></p>
+        <p>color: <pre>( {{r}}, {{g}} , {{b}} )</pre></p>
+        <p>projection: <pre>( {{lat}} , {{lon}} ) ( {{dx}} , {{dy}} , {{dz}} )</pre> </p>
+        <p>hit: <pre>{{ JSON.stringify(hit,null,2) }}</pre> </p>
         <p>elapsed: {{elapsed}} </p>
     </div>
     <canvas id="eef"></canvas>

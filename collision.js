@@ -1105,7 +1105,7 @@ var CCT = {
 				hit_point : o.clone()
 			};
 		}
-		var cos_theta = dir.dot(N);
+		var cos_theta = dir.dot(plane_n);
 		if (CCT.fcmpf(cos_theta, 0.0, CCT.EPSILON) === 0)
 			return null;
 		var distance = pp.d / cos_theta;
