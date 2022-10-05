@@ -1,3 +1,7 @@
+/**
+ * @typedef {{hit_point:CCT.Vector3,hit_normal:CCT.Vector3,distance:Number}} Hit
+ */
+
 // Orthographic settings
 // let xleft =-5;
 // let xright=5;
@@ -23,8 +27,16 @@ let shapes=[
     {
         name: "sphere",
         shape: new CCT.Sphere(new CCT.Vector3(0,-4,60),6),
+        /**
+         * 
+         * @param {Hit} hit 
+         */
         color(hit) {
-            let
+            let pos=hit.hit_point;
+            let dir=hit.hit_normal;
+            let {shape,new_hit}=castRay(pos,dir);
+            if (new_hit!=null) return lerp( 1 , [0,0,0], getColor(shape,new_hit));
+            else return [0,0,0];
             // return [0,255,0];
         }
     },
@@ -80,7 +92,7 @@ function castRay(pos,dir) {
  * 
  * @param {*} shape 
  * @param {*} hit 
- * @returns {light,color}
+ * @returns {{light: Number,color: Number[]}}
  */
 function getColor(shape,hit) {
     let light=map(hit.distance,0,100,2,0.5);
@@ -91,7 +103,6 @@ function getColor(shape,hit) {
 
     return {light,color};
 }
-
 
 /**
  * 
