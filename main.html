@@ -10,9 +10,14 @@
         pre {
             background-color: lightgrey;
             border-radius: 5px;
+            padding: 2px;
+            font-size: 12px;
+            display: inline;
+        }
+        pre#hit {
+            display: block;
             padding: 5px;
-            font-size: 16px;
-            min-height: calc( 16px * 14 );
+            min-height: calc( 12px * 16 );
         }
     </style>
 </head>
@@ -22,8 +27,9 @@
         <p>FPS: <pre>{{fps}} | MS: {{ms}}</pre></p>
         <p>pos: <pre>( {{x}} , {{y}} )</pre></p>
         <p>color: <pre>( {{r}}, {{g}} , {{b}} )</pre></p>
+        <p>light: <pre> {{light}} </pre></p>
         <p>projection: <pre>( {{lat}} , {{lon}} ) ( {{dx}} , {{dy}} , {{dz}} )</pre> </p>
-        <p>hit: <pre>{{ JSON.stringify(hit,null,2) }}</pre> </p>
+        <p>hit: <pre id="hit">{{ JSON.stringify(hit,null,2) }}</pre> </p>
         <p>elapsed: {{elapsed}} </p>
     </div>
     <canvas id="eef"></canvas>

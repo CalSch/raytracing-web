@@ -1,10 +1,10 @@
 /** @type {HTMLCanvasElement} */
 let c = document.getElementById('eef');
 let ctx = c.getContext('2d');
-const width = 100;
-const height = 100;
-const wscale = 5;
-const hscale = 5;
+const width =  200;
+const height = 200;
+const wscale = 2;
+const hscale = 2;
 c.width = width * wscale;
 c.height = height * hscale;
 
@@ -71,6 +71,8 @@ createApp({
             this.dx=angle.dir.x.toFixed(2);
             this.dy=angle.dir.y.toFixed(2);
             this.dz=angle.dir.z.toFixed(2);
+
+            this.light=data.light;
 
             this.hit=data.hit;
         }.bind(this));
