@@ -14,14 +14,12 @@ let xright=180-  45;
 let yleft =     -45;
 let yright=      45;
 
-let s=new CCT.Plane(new CCT.Vector3(0,-10,0),new CCT.Vector3(0,1,0));
-let s2=new CCT.Sphere(new CCT.Vector3(0,-10,400),1);
 let shapes=[
     {
         name: "plane",
         shape: new CCT.Plane(new CCT.Vector3(0,-10,0),new CCT.Vector3(0,1,0)),
         color(hit) {
-            return Math.round(hit.hit_point.x/10)%2==0 ? [230,40,50] : [50,40,230];
+            return (Math.round(hit.hit_point.x/10)+Math.round(hit.hit_point.z/10))%2==0 ? [230,40,50] : [50,40,230];
         }
     },
     {
@@ -32,12 +30,16 @@ let shapes=[
          * @param {Hit} hit 
          */
         color(hit) {
-            let pos=hit.hit_point;
-            let dir=hit.hit_normal;
-            let {shape,new_hit}=castRay(pos,dir);
-            if (new_hit!=null) return lerp( 1 , [0,0,0], getColor(shape,new_hit));
-            else return [0,0,0];
-            // return [0,255,0];
+            // let pos=hit.hit_point;
+            // let dir=hit.hit_normal;
+            // let {shape,new_hit}=castRay(pos,dir);
+            // if (new_hit!=null) return lerp( 1 , [0,0,0], getColor(shape,new_hit));
+            // else return [0,0,0];
+            return [
+                128,
+                128,
+                128,
+            ]
         }
     },
 ]
@@ -52,7 +54,7 @@ function ortho(x,y) {
 
 function perspective(x,y) {
     let lat=map(x,0,width, xleft,xright);
-    let lon=map(y,0,width, yleft,yright);
+    let lon=map(y,0,height,yleft,yright);
     let radius=1;
     let dir = polarToCartesian(lon,lat,radius);
     let dx=dir.y,
@@ -95,8 +97,9 @@ function castRay(pos,dir) {
  * @returns {{light: Number,color: Number[]}}
  */
 function getColor(shape,hit) {
-    let light=map(hit.distance,0,100,2,0.5);
-    // light=map( dist3( new CCT.Vector3(10,-5,20) , hit.hit_point) ,0,20,2,0.5);
+    // let light=1;
+    // let light=map(hit.distance,0,100,2,0.5);
+    let light=map( dist3( new CCT.Vector3(20,-5,50) , hit.hit_point) ,0,30,2,0.5);
     
     let objColor=shape.color(hit);
     let color = [objColor[0]*light,objColor[1]*light,objColor[2]*light];
