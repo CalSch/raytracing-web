@@ -1,5 +1,7 @@
 /**
  * @typedef {{hit_point:CCT.Vector3,hit_normal:CCT.Vector3,distance:Number}} Hit
+ * @typedef {{name: string, shape, color: (Hit)=>Number[]}} Shape
+ * @typedef {{pos: CCT.Vector3, dir: CCT.Vector3, lat:Number,lon:Number}} Ray
  */
 
 // Orthographic settings
@@ -14,6 +16,7 @@ let xright=180-  45;
 let yleft =     -45;
 let yright=      45;
 
+/** @type {Shape[]} */
 let shapes=[
     {
         name: "plane",
@@ -69,7 +72,7 @@ function perspective(x,y) {
  * 
  * @param {CCT.Vector3} pos 
  * @param {CCT.Vector3} dir 
- * @returns {shape,hit}
+ * @returns {shape: Shape,hit: Hit}
  */
 function castRay(pos,dir) {
     let closestShape;
@@ -92,14 +95,18 @@ function castRay(pos,dir) {
 
 /**
  * 
- * @param {*} shape 
- * @param {*} hit 
+ * @param {Shape} shape 
+ * @param {Hit} hit 
+ * @param {Ray} ray 
  * @returns {{light: Number,color: Number[]}}
  */
-function getColor(shape,hit) {
-    // let light=1;
+function getColor(shape,hit,ray) {
+    if (hit==null) {
+        return {light:0,color:[128,150,255]}
+    }
+    let light=1;
     // let light=map(hit.distance,0,100,2,0.5);
-    let light=map( dist3( new CCT.Vector3(20,-5,50) , hit.hit_point) ,0,30,2,0.5);
+    // let light=map( dist3( new CCT.Vector3(20,-5,50) , hit.hit_point) ,0,30,2,0.5);
     
     let objColor=shape.color(hit);
     let color = [objColor[0]*light,objColor[1]*light,objColor[2]*light];
@@ -128,25 +135,30 @@ function getColor(shape,hit) {
  * }}
  */
 function pixData(x,y) {
-    let ray=new CCT.Ray(new CCT.Vector3(0,0,0));
+    let pos=new CCT.Ray(new CCT.Vector3(0,0,0));
     // let dir=new CCT.Vector3(0,0,1);
     let projection=perspective(x,y);
 
-    let {shape,hit}=castRay(ray,projection.dir);
+    let {shape,hit}=castRay(pos,projection.dir);
 
     hit = hit || null;
 
-
+    /** @type {Ray} */
+    let ray={
+        pos,
+        dir:projection.dir,
+        lat:projection.lat,
+        lon:projection.lon,
+    }
 
     let color=[0,0,0];
     let light=0;
 
-    if (hit!==null) {
-        ({light,color}=getColor(shape,hit));
-    }
+    ({light,color}=getColor(shape,hit,ray));
+    
     return {
         ray: {
-            pos:ray,
+            pos,
             dir:projection.dir,
             lat:projection.lat,
             lat:projection.lon,
