@@ -30,7 +30,7 @@
         <p>light: <pre> {{light}} </pre></p>
         <p>projection: <pre>( {{lat}} , {{lon}} ) ( {{dx}} , {{dy}} , {{dz}} )</pre> </p>
         <p>hit: <pre id="hit">{{ JSON.stringify(hit,function(key, val) {
-            return val.toFixed ? Number(val.toFixed(3)) : val;
+            return (val ? val : "").toFixed ? Number(val.toFixed(3)) : val;
         },2) }}</pre> </p>
         <p>elapsed: {{elapsed}} </p>
     </div>
