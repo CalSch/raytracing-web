@@ -58,8 +58,7 @@ function ortho(x,y) {
 function perspective(x,y) {
     let lat=map(x,0,width, xleft,xright);
     let lon=map(y,0,height,yleft,yright);
-    let radius=1;
-    let dir = polarToCartesian(lon,lat,radius);
+    let dir = polarToCartesian(lon,lat,1);
     let dx=dir.y,
         dy=dir.x,
         dz=dir.z;
@@ -102,11 +101,13 @@ function castRay(pos,dir) {
  */
 function getColor(shape,hit,ray) {
     if (hit==null) {
-        return {light:0,color:[128,150,255]}
+        return {light:0,color:lerpArray( -ray.lon/30, [0,0,255] , [120,150,255] )}
     }
     let light=1;
     // let light=map(hit.distance,0,100,2,0.5);
     // let light=map( dist3( new CCT.Vector3(20,-5,50) , hit.hit_point) ,0,30,2,0.5);
+
+    
     
     let objColor=shape.color(hit);
     let color = [objColor[0]*light,objColor[1]*light,objColor[2]*light];
