@@ -27,3 +27,15 @@ function dist3(v1,v2) {
         (v2.z-v1.z)**2
     )
 }
+
+function clamp(x,min,max) {
+    return Math.max(Math.min(x,max),min)
+}
+
+function clampArray(x,min,max) {
+    let a=[]
+    x.forEach(i=>{
+        a.push(clamp(i,min,max))
+    })
+    return a
+}

@@ -28,7 +28,7 @@ function polarToCartesian( lon, lat, radius ) {
  * @param {Vector3} coord
  * @return {Array<Number>}
  */
-function cartesianToPolar( coord, radius ) {
+function cartesianToPolar( coord) {
 
   var lon = Math.atan2( coord.x, -coord.z ) * RAD2DEG
   var length = Math.sqrt( coord.x * coord.x + coord.z * coord.z )

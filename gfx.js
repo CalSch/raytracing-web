@@ -22,7 +22,7 @@ let shapes=[
         name: "plane",
         shape: new CCT.Plane(new CCT.Vector3(0,-10,0),new CCT.Vector3(0,1,0)),
         color(hit) {
-            return (Math.round(hit.hit_point.x/10)+Math.round(hit.hit_point.z/10))%2==0 ? [230,40,50] : [50,40,230];
+            return (Math.round(hit.hit_point.x/10)+Math.round(hit.hit_point.z/10))%2==0 ? [230,40,50] : [0,230,230];
         }
     },
     {
@@ -33,16 +33,23 @@ let shapes=[
          * @param {Hit} hit 
          */
         color(hit) {
-            // let pos=hit.hit_point;
+            let pos=hit.hit_point;
+            pos.y-=0.1
             // let dir=hit.hit_normal;
-            // let {shape,new_hit}=castRay(pos,dir);
-            // if (new_hit!=null) return lerp( 1 , [0,0,0], getColor(shape,new_hit));
-            // else return [0,0,0];
-            return [
-                128,
-                128,
-                128,
-            ]
+            let dir=new CCT.Vector3(0,-1,0);
+            let [lon,lat]=cartesianToPolar(dir);
+            let {x,y,z}=polarToCartesian(lon,lat,1);
+            dir.x=x;
+            dir.y=y;
+            dir.z=z;
+            /**@type {Ray} */
+            let ray={dir,lat,lon,pos}
+            let rayHit=castRay(new CCT.Ray(pos),dir);
+            let shape=rayHit.shape;
+            let new_hit=rayHit.hit;
+            // if (new_hit) return lerp( 1 , [0,0,0], getColor(shape,new_hit));
+            // else return [255,0,255];
+            return lerpArray(0.6,[0,0,0],getColor(shape,new_hit,ray).color)
         }
     },
 ]
@@ -69,9 +76,9 @@ function perspective(x,y) {
 
 /**
  * 
- * @param {CCT.Vector3} pos 
+ * @param {CCT.Ray} pos 
  * @param {CCT.Vector3} dir 
- * @returns {shape: Shape,hit: Hit}
+ * @returns {{shape: Shape,hit: Hit}}
  */
 function castRay(pos,dir) {
     let closestShape;
@@ -100,12 +107,13 @@ function castRay(pos,dir) {
  * @returns {{light: Number,color: Number[]}}
  */
 function getColor(shape,hit,ray) {
-    if (hit==null) {
-        return {light:0,color:lerpArray( -ray.lon/30, [0,0,255] , [120,150,255] )}
+    if (!hit) {
+        return {light:1,color:lerpArray( -ray.lon/30, [0,0,255] , [120,150,255] )}
     }
-    let light=1;
+    // let light=1;
     // let light=map(hit.distance,0,100,2,0.5);
-    // let light=map( dist3( new CCT.Vector3(20,-5,50) , hit.hit_point) ,0,30,2,0.5);
+    let light=map( dist3( new CCT.Vector3(20,-5,50) , hit.hit_point) ,0,30,2,0.5);
+    light=Math.max(0,light);
 
     
     
@@ -140,7 +148,7 @@ function pixData(x,y) {
     // let dir=new CCT.Vector3(0,0,1);
     let projection=perspective(x,y);
 
-    let {shape,hit}=castRay(pos,projection.dir);
+    let {shape,hit}=castRay(pos,projection.dir);    
 
     hit = hit || null;
 
@@ -171,5 +179,17 @@ function pixData(x,y) {
 }
 
 function pixColor(x,y) {
-    return pixData(x,y).color;
+    // post process
+    let c=pixData(x,y).color;
+    for (let i=0; i<3;i++) {
+        if (c[i]<0) {
+            c[(i-1)%3]+=Math.abs(c[i])/2;
+            c[(i+1)%3]+=Math.abs(c[i])/2;
+        }
+        if (c[i]>255) {
+            c[(i-1)%3]+=(c[i]-255)/2;
+            c[(i+1)%3]+=(c[i]-255)/2;
+        }
+    }
+    return c;
 }
