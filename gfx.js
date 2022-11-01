@@ -49,7 +49,7 @@ let shapes=[
             let new_hit=rayHit.hit;
             // if (new_hit) return lerp( 1 , [0,0,0], getColor(shape,new_hit));
             // else return [255,0,255];
-            return lerpArray(0.6,[0,0,0],getColor(shape,new_hit,ray).color)
+            return lerpArray(0.6,[30,30,30],getColor(shape,new_hit,ray).color)
         }
     },
 ]
