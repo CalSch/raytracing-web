@@ -35,26 +35,10 @@ window.addEventListener('keydown', (ev) => {
 //     }
 // },0);
 
-
-// VueJs
 let fps=0,ms=0;
-const { createApp } = Vue;
-createApp({
-    data() {
-        return {
-            fps:55,ms:2,
-            x:0,y:0,
-            r:0,g:0,b:0,
-            lat:0,lon:0,
-            dx:0,dy:0,dz:0,
 
-            hit: {},
-
-            elapsed:0,
-        }
-    },
-    mounted() {
-        let lastTime=Date.now();
+function start() {
+    let lastTime=Date.now();
         c.addEventListener('mousemove',function(ev){
             this.x=Math.floor(ev.offsetX/wscale);
             this.y=Math.floor(ev.offsetY/hscale);
@@ -106,5 +90,33 @@ createApp({
         while (loop());
         let end=Date.now();
         this.elapsed=end-start;
-    }
-}).mount('#data')
+}
+
+const useVue=false;
+
+if (useVue) {
+    // VueJs
+    const { createApp } = Vue;
+    
+    createApp({
+        data() {
+            return {
+                fps:55,ms:2,
+                x:0,y:0,
+                r:0,g:0,b:0,
+                lat:0,lon:0,
+                dx:0,dy:0,dz:0,
+    
+                hit: {},
+    
+                elapsed:0,
+            }
+        },
+        mounted() {
+            start()
+        }
+    }).mount('#data')
+} else {
+    start()
+}
+

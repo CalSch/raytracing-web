@@ -34,7 +34,6 @@ let shapes=[
          */
         color(hit) {
             let pos=hit.hit_point;
-            pos.y-=0.1
             // let dir=hit.hit_normal;
             let dir=new CCT.Vector3(0,-1,0);
             let [lon,lat]=cartesianToPolar(dir);
@@ -44,7 +43,7 @@ let shapes=[
             dir.z=z;
             /**@type {Ray} */
             let ray={dir,lat,lon,pos}
-            let rayHit=castRay(new CCT.Ray(pos),dir);
+            let rayHit=castRay(new CCT.Ray(pos),dir,["sphere"]);
             let shape=rayHit.shape;
             let new_hit=rayHit.hit;
             // if (new_hit) return lerp( 1 , [0,0,0], getColor(shape,new_hit));
@@ -78,15 +77,16 @@ function perspective(x,y) {
  * 
  * @param {CCT.Ray} pos 
  * @param {CCT.Vector3} dir 
+ * @param {string[] | undefined} exclude
  * @returns {{shape: Shape,hit: Hit}}
  */
-function castRay(pos,dir) {
+function castRay(pos,dir,exclude) {
     let closestShape;
     let closestHit;
 
     shapes.forEach((item)=>{
         let a=CCT.cast(pos,dir,item.shape);
-        if (a==null) return;
+        if (a==null || (exclude ? exclude.indexOf(item.name)!=-1 : false)) return;
         if (!closestShape || closestHit.distance>=a.distance) {
             closestShape=item;
             closestHit=a;
@@ -113,7 +113,7 @@ function getColor(shape,hit,ray) {
     // let light=1;
     // let light=map(hit.distance,0,100,2,0.5);
     let light=map( dist3( new CCT.Vector3(20,-5,50) , hit.hit_point) ,0,30,2,0.5);
-    light=Math.max(0,light);
+    light=Math.max(0.05,light);
 
     
     
