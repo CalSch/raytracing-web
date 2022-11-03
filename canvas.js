@@ -92,7 +92,7 @@ function start() {
         this.elapsed=end-start;
 }
 
-const useVue=false;
+const useVue=true;
 
 if (useVue) {
     // VueJs
