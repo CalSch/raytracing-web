@@ -19,6 +19,12 @@
             padding: 5px;
             min-height: calc( 12px * 17 );
         }
+        pre#data {
+            display: block;
+            padding: 5px;
+            height: calc( 12px * 17 );
+            overflow-y: scroll;
+        }
     </style>
 </head>
 <body>
@@ -29,10 +35,12 @@
         <p>color: <pre>( {{r}}, {{g}} , {{b}} )</pre></p>
         <p>light: <pre> {{light}} </pre></p>
         <p>projection: <pre>( {{lat}} , {{lon}} ) ( {{dx}} , {{dy}} , {{dz}} )</pre> </p>
-        <p>hit: <pre id="hit">{{ JSON.stringify(hit,function(key, val) {
+
+        <p>data: <pre id="data">{{ JSON.stringify(data,function(key, val) {
             return (val ? val : "").toFixed ? Number(val.toFixed(3)) : val;
         },2) }}</pre> </p>
         <p>elapsed: {{elapsed}} </p>
+        <p>{{ locked ? "Locked" : "Unlocked" }} (space to toggle) </p>
     </div>
     <canvas id="eef"></canvas>
 
