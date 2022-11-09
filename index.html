@@ -22,32 +22,68 @@
         pre#data {
             display: block;
             padding: 5px;
-            height: calc( 12px * 17 );
+            height: calc( 12px * 40 );
             overflow-y: scroll;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: auto 422px;
+        }
+        @media only screen and (max-width: 1020px) {
+            .grid-container {
+                display: inline;
+            }
+        }
+
+        button {
+            width: 100%;
+            padding: 20px;
+            font-size: 24pt;
+            margin-bottom: 10px;
+        }
+
+        .grid-item {
+            border: 1px solid black;
+            margin: 5px;
+            padding: 5px;
         }
     </style>
 </head>
 <body>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <div id="data">
-        <p>FPS: <pre>{{fps}} | MS: {{ms}}</pre></p>
-        <p>pos: <pre>( {{x}} , {{y}} )</pre></p>
-        <p>color: <pre>( {{r}}, {{g}} , {{b}} )</pre></p>
-        <p>light: <pre> {{light}} </pre></p>
-        <p>projection: <pre>( {{lat}} , {{lon}} ) ( {{dx}} , {{dy}} , {{dz}} )</pre> </p>
+    <label for="x">X Res:</label>
+    <input type="number" value="200" name="x" id="ix">
+    <label for="y">Y Res:</label>
+    <input type="number" value="200" name="y" id="iy">
 
-        <p>data: <pre id="data">{{ JSON.stringify(data,function(key, val) {
-            return (val ? val : "").toFixed ? Number(val.toFixed(3)) : val;
-        },2) }}</pre> </p>
-        <p>elapsed: {{elapsed}} </p>
-        <p>{{ locked ? "Locked" : "Unlocked" }} (space to toggle) </p>
+    <button onclick="start()">Start! (only click once)</button>
+    <div class="grid-container">
+        <div class="grid-item" id="data">
+            <h2 style="text-align:center">Debug Data</h2>
+            <hr>
+            <p>elapsed: {{elapsed}}ms </p>
+            <p>pos: <pre>( {{x}} , {{y}} )</pre></p>
+            <p>color: <pre>( {{r}}, {{g}} , {{b}} )</pre></p>
+            <p>light: <pre> {{light}} </pre></p>
+            <p>projection: <pre>( {{lat}} , {{lon}} ) ( {{dx}} , {{dy}} , {{dz}} )</pre> </p>
+    
+            <p>data: <pre id="data">{{ JSON.stringify(data,function(key, val) {
+                return (val ? val : "").toFixed ? Number(val.toFixed(3)) : val;
+            },2) }}</pre> </p>
+            <p>{{ locked ? "Locked" : "Unlocked" }} (space to toggle) </p>
+        </div>
+
+        <div class="grid-item" >
+            <h2 style="text-align:center">Image</h2>
+            <hr>
+            <canvas id="eef"></canvas>
+        </div>
     </div>
-    <canvas id="eef"></canvas>
 
-    <script src="collision.js"></script>
-    <script src="coords.js"></script>
-    <script src="math.js"></script>
-    <script src="gfx.js"></script>
-    <script src="canvas.js"></script>
+    <script defer src="collision.js"></script>
+    <script defer src="coords.js"></script>
+    <script defer src="math.js"></script>
+    <script defer src="gfx.js"></script>
+    <script defer src="canvas.js"></script>
 </body>
 </html>

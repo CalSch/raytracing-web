@@ -1,10 +1,10 @@
 /** @type {HTMLCanvasElement} */
 let c = document.getElementById('eef');
 let ctx = c.getContext('2d');
-const width =  200;
-const height = 200;
-const wscale = 2;
-const hscale = 2;
+let width =200;
+let height=200;
+let wscale = 2;
+let hscale = 2;
 c.width = width * wscale;
 c.height = height * hscale;
 
@@ -33,8 +33,7 @@ let currentY = 0;
 
 let fps=0,ms=0;
 
-function start() {
-    let lastTime=Date.now();
+function render() {
     let locked=false;
     c.addEventListener('mousemove',function(ev){
         // this.locked=locked;
@@ -68,25 +67,19 @@ function start() {
         // console.dir(ev.code)
     }.bind(this),true)
     function loop() {
-        if (!paused) {
-            let color = pixColor(currentX, currentY);
-            ctx.fillStyle = `rgb(${color[0]},${color[1]},${color[2]})`;
-            ctx.fillRect(currentX * wscale, currentY * hscale, wscale, hscale);
+        let color = pixColor(currentX, currentY);
+        ctx.fillStyle = `rgb(${color[0]},${color[1]},${color[2]})`;
+        ctx.fillRect(currentX * wscale, currentY * hscale, wscale, hscale);
 
-            currentX++;
-            if (currentX > width) {
-                currentX = 0;
-                currentY++;
-            }
-            if (currentY > height) {
-                paused=true;
-                return false;
-            }
+        currentX++;
+        if (currentX > width) {
+            currentX = 0;
+            currentY++;
         }
-        let time=Date.now();
-        this.ms=time-lastTime;
-        this.fps=1000/(time-lastTime);
-        lastTime=time;
+        if (currentY > height) {
+            paused=true;
+            return false;
+        }
         // loop.bind(this)();
 
         return true;
@@ -100,30 +93,42 @@ function start() {
 }
 
 const useVue=true;
+let oldApp;
 
-if (useVue) {
-    // VueJs
-    const { createApp } = Vue;
+function start() {
+    width  = parseInt(document.getElementById('ix').value);
+    height = parseInt(document.getElementById('iy').value);
+    wscale = 400/width;
+    hscale = 400/height;
+    if (useVue) {
+        // VueJs
+        const { createApp } = Vue;
+
+        // if (oldApp) oldApp.unmount()
+        
+        oldApp=createApp({
+            data() {
+                return {
+                    x:0,y:0,
+                    r:0,g:0,b:0,
+                    lat:0,lon:0,
+                    dx:0,dy:0,dz:0,
+        
+                    hit: {},
+                    data: {},
+        
+                    elapsed:0,
     
-    createApp({
-        data() {
-            return {
-                x:0,y:0,
-                r:0,g:0,b:0,
-                lat:0,lon:0,
-                dx:0,dy:0,dz:0,
-    
-                hit: {},
-                data: {},
-    
-                elapsed:0,
+                    locked: false,
+                }
+            },
+            mounted() {
+                render.bind(this)()
             }
-        },
-        mounted() {
-            start.bind(this)()
-        }
-    }).mount('#data')
-} else {
-    start()
+        })
+        oldApp.mount('#data')
+    } else {
+        render()
+    }
 }
 
