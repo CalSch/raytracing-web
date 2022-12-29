@@ -27,9 +27,9 @@
         }
         .grid-container {
             display: grid;
-            grid-template-columns: auto 422px;
+            grid-template-columns: 422px auto;
         }
-        @media only screen and (max-width: 1020px) {
+        @media only screen and (max-width: 800px) {
             .grid-container {
                 display: inline;
             }
@@ -52,12 +52,17 @@
 <body>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <label for="x">X Res:</label>
-    <input type="number" value="200" name="x" id="ix">
+    <input type="number" value="400" name="x" id="ix">
     <label for="y">Y Res:</label>
-    <input type="number" value="200" name="y" id="iy">
+    <input type="number" value="400" name="y" id="iy">
 
     <button onclick="start()">Start! (only click once)</button>
     <div class="grid-container">
+        <div class="grid-item" >
+            <h2 style="text-align:center">Image</h2>
+            <hr>
+            <canvas id="eef"></canvas>
+        </div>
         <div class="grid-item" id="data">
             <h2 style="text-align:center">Debug Data</h2>
             <hr>
@@ -72,18 +77,14 @@
             },2) }}</pre> </p>
             <p>{{ locked ? "Locked" : "Unlocked" }} (space to toggle) </p>
         </div>
-
-        <div class="grid-item" >
-            <h2 style="text-align:center">Image</h2>
-            <hr>
-            <canvas id="eef"></canvas>
-        </div>
     </div>
 
     <script defer src="collision.js"></script>
     <script defer src="coords.js"></script>
     <script defer src="math.js"></script>
+    <script defer src="types.js"></script>
     <script defer src="gfx.js"></script>
     <script defer src="canvas.js"></script>
+    <!-- <script defer src="sylvester-0-1-3/sylvester.js"></script> -->
 </body>
 </html>
