@@ -24,6 +24,9 @@ let paused = false;
 let currentX = 0;
 let currentY = 0;
 
+let mxEl=document.getElementById("mx");
+let myEl=document.getElementById("my");
+
 // let renderInt=setInterval(()=>{
 //     if (paused) return;
 //     let color=pix(currentX,currentY);
@@ -92,11 +95,7 @@ let fps=0,ms=0;
 function render() {
     let locked=false;
     // let ray=false;
-    canvas.addEventListener('mousemove',function(ev){
-        // this.locked=locked;
-        if (locked)return;
-        this.x=Math.floor(ev.offsetX/wscale);
-        this.y=Math.floor(ev.offsetY/hscale);
+    function update() {
         // let color=ctx.getImageData(this.x*wscale,this.y*hscale,1,1).data;
         let data=pixData(this.x,this.y);
         let color=data.color;
@@ -114,7 +113,24 @@ function render() {
         this.light=data.light;
 
         this.data=data;
+    }
+    canvas.addEventListener('mousemove',function(ev){
+        // this.locked=locked;
+        if (locked)return;
+
+        this.x=Math.floor(ev.offsetX/wscale);
+        this.y=Math.floor(ev.offsetY/hscale);
+        
+        update.bind(this)();
+
+        mxEl.value=this.x;
+        myEl.value=this.y;
     }.bind(this),true);
+    mxEl.onchange=myEl.onchange=()=>{
+        this.x=parseInt(mxEl.value);
+        this.y=parseInt(myEl.value);
+        update.bind(this)();
+    }
     window.addEventListener('keydown',function(ev){
         if (ev.code === "Space") {
             ev.preventDefault()

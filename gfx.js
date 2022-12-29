@@ -54,7 +54,12 @@ let shapes=[
             // let dir=hit.hit_normal;
             let dir=new CCT.Vector3(pos.x,pos.y,pos.z);
             let p=new Point(pos.x,pos.y,pos.z);
-            p.rotate(new Rotation(Math.PI/1,hit.hit_normal.x,hit.hit_normal.y,-hit.hit_normal.z));
+            let axis={
+                x: hit.hit_normal.x,
+                y: hit.hit_normal.y,
+                z: -hit.hit_normal.z,
+            }
+            p.rotate(new Rotation(Math.PI/1,axis.x,axis.y,axis.z));
             dir.x=p.i;
             dir.y=p.j;
             dir.z=p.k;
@@ -76,6 +81,7 @@ let shapes=[
                     dir,
                     new_hit,
                     shape:(shape||{}).name,
+                    axis,
                 }
             }
         }
