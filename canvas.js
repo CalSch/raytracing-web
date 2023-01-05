@@ -160,10 +160,13 @@ function render() {
                 // canvas_ctx.moveTo(p1.x,p1.y);
                 // canvas_ctx.lineTo(p2.x,p2.y);
                 // canvas_ctx.stroke();
+
+                let reverse=dist3(p1_3d)<dist3(p2_3d);
                 for (let i=0;i<=30;i++) {
+                    if (reverse) i=30-i;
                     let x=lerp(i/30,p1.x,p2.x);
                     let y=lerp(i/30,p1.y,p2.y);
-                    let s=lerp(i/30,p1.size,p2.size)*.08-30;
+                    let s=lerp(i/30,p1.size,p2.size)*.04-13;
                     s=Math.max(s,1)
                     // s=10
                     canvas_ctx.fillStyle=`hsl(${map(
@@ -174,7 +177,16 @@ function render() {
                     canvas_ctx.beginPath();
                     canvas_ctx.arc(x, y, s, 0, 2 * Math.PI);
                     canvas_ctx.fill();
+
+                    if (reverse) i=30-i;
                 }
+
+                canvas_ctx.lineWidth="2";
+                canvas_ctx.strokeStyle="red";
+                canvas_ctx.beginPath();
+                canvas_ctx.moveTo(p1.x,p1.y);
+                canvas_ctx.lineTo(p2.x,p2.y);
+                canvas_ctx.stroke();
             }
         }
         // console.dir(ev.code)

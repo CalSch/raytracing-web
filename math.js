@@ -28,6 +28,7 @@ function dist2(x1,y1,x2,y2) {
 }
 
 function dist3(v1,v2) {
+	if (!v2) v2={x:0,y:0,z:0}
     return Math.sqrt(
         (v2.x-v1.x)**2 +
         (v2.y-v1.y)**2 +
