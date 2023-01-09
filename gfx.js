@@ -1,5 +1,5 @@
 /**
- * @typedef {{hit_point:CCT.Vector3,hit_normal:CCT.Vector3,distance:Number}} Hit
+ * @typedef {{origin:CCT.Vector3,hit_point:CCT.Vector3,hit_normal:CCT.Vector3,distance:Number}} Hit
  * @typedef {{name: string, shape, color: (Hit)=>Number[]}} Shape
  * @typedef {{pos: CCT.Vector3, dir: CCT.Vector3, lat:Number,lon:Number}} Ray
  */
@@ -21,7 +21,7 @@ let shapes=[
     {
         name: "plane",
         shape: new CCT.Plane(new CCT.Vector3(0,-10,0),new CCT.Vector3(0,1,0)),
-        color(hit) {
+        color(hit,ray) {
             let {x,y,z}=hit.hit_point || {x:0,y:0,z:0};
             // x+=10;
             // z+=10;
@@ -38,7 +38,7 @@ let shapes=[
     {
         name: "small_sphere",
         shape: new CCT.Sphere(new CCT.Vector3(5,-9,55),2),
-        color(hit) {
+        color(hit,ray) {
             return {color:[15,150,10]}
         }
     },
@@ -48,16 +48,18 @@ let shapes=[
         /**
          * 
          * @param {Hit} hit 
+         * @param {Ray} ray 
          */
-        color(hit) {
+        color(hit,ray) {
             let pos=hit.hit_point;
             // let dir=hit.hit_normal;
             let dir=new CCT.Vector3(pos.x,pos.y,pos.z);
-            let p=new Point(pos.x,pos.y,pos.z);
+            let s=new Vec3(ray.pos).sub(new Vec3(ray.dir));
+            let p=new Point(s.x,s.y,s.z);
             let axis={
                 x: hit.hit_normal.x,
                 y: hit.hit_normal.y,
-                z: -hit.hit_normal.z,
+                z: hit.hit_normal.z,
             }
             p.rotate(new Rotation(Math.PI/1,axis.x,axis.y,axis.z));
             dir.x=p.i;
@@ -69,7 +71,7 @@ let shapes=[
             dir.y=y;
             dir.z=z;
             /**@type {Ray} */
-            let ray={dir,lat,lon,pos}
+            let newRay={dir,lat,lon,pos}
             let rayHit=castRay(new CCT.Ray(pos),dir,["sphere"]);
             let shape=rayHit.shape;
             let new_hit=rayHit.hit;
@@ -133,6 +135,7 @@ function castRay(pos,dir,exclude) {
     return {
         shape: closestShape,
         hit: closestHit,
+        origin: pos,
     }
 }
 
@@ -167,7 +170,7 @@ function getColor(shape,hit,ray) {
         // )
     }
     
-    let colorData=shape.color(hit);
+    let colorData=shape.color(hit,ray);
     let objColor=colorData.color
     let color = [objColor[0]*light,objColor[1]*light,objColor[2]*light];
 

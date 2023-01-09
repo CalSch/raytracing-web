@@ -143,7 +143,6 @@ function render() {
             let data=pixData(this.x,this.y);
 
             if (data.extra.dir) {
-                console.dir(data)
                 let p1_3d={ ...data.hit.hit_point };
                 let p2_3d={ ...(data.extra.new_hit || {hit_point:{x:0,y:0,z:0}}).hit_point };
                 let p1=project(p1_3d.x,-p1_3d.y,p1_3d.z);
@@ -166,7 +165,7 @@ function render() {
                     if (reverse) i=30-i;
                     let x=lerp(i/30,p1.x,p2.x);
                     let y=lerp(i/30,p1.y,p2.y);
-                    let s=lerp(i/30,p1.size,p2.size)*.04-13;
+                    let s=lerp(i/30,p1.size,p2.size)*.04-15;
                     s=Math.max(s,1)
                     // s=10
                     canvas_ctx.fillStyle=`hsl(${map(
@@ -188,6 +187,8 @@ function render() {
                 canvas_ctx.lineTo(p2.x,p2.y);
                 canvas_ctx.stroke();
             }
+        } else if (ev.code==="KeyC") {
+            canvas_ctx.drawImage(image,0,0)
         }
         // console.dir(ev.code)
     }.bind(this),true)
