@@ -30,6 +30,7 @@ let shapes=[
             //     (z*1)+10,
             //     0
             // ];
+            // return reflection(hit,ray);
             return {
                 color:(Math.round(hit.hit_point.x/10)+Math.round(hit.hit_point.z/10))%2==0 ? [230,40,50] : [0,230,230]
             };
@@ -51,41 +52,7 @@ let shapes=[
          * @param {Ray} ray 
          */
         color(hit,ray) {
-            let pos=hit.hit_point;
-            // let dir=hit.hit_normal;
-            let dir=new CCT.Vector3(pos.x,pos.y,pos.z);
-            let s=new Vec3(ray.pos).sub(new Vec3(ray.dir));
-            let p=new Point(s.x,s.y,s.z);
-            let axis={
-                x: hit.hit_normal.x,
-                y: hit.hit_normal.y,
-                z: hit.hit_normal.z,
-            }
-            p.rotate(new Rotation(Math.PI/1,axis.x,axis.y,axis.z));
-            dir.x=p.i;
-            dir.y=p.j;
-            dir.z=p.k;
-            let [lon,lat]=cartesianToPolar(dir);
-            let {x,y,z}=polarToCartesian(lon,lat,1);
-            dir.x=x;
-            dir.y=y;
-            dir.z=z;
-            /**@type {Ray} */
-            let newRay={dir,lat,lon,pos}
-            let rayHit=castRay(new CCT.Ray(pos),dir,["sphere"]);
-            let shape=rayHit.shape;
-            let new_hit=rayHit.hit;
-            // if (new_hit) return lerp( 1 , [0,0,0], getColor(shape,new_hit));
-            // else return [255,0,255];
-            return {
-                color:lerpArray(0.9,[130,130,130],getColor(shape,new_hit,ray).color),
-                extra:{
-                    dir,
-                    new_hit,
-                    shape:(shape||{}).name,
-                    axis,
-                }
-            }
+            return reflection(hit,ray)
         }
     },
 ]
@@ -148,7 +115,10 @@ function castRay(pos,dir,exclude) {
  */
 function getColor(shape,hit,ray) {
     if (!hit) {
-        return {light:1,color:lerpArray( -ray.lon/30, [0,0,255] , [120,150,255] )}
+        let skyColor=lerpArray(-ray.lat/100,[255,0,0],[0,0,255])
+        return {light:1,
+            color:lerpArray( -ray.lon/30, skyColor , [120,150,255] )
+        }
     }
     let light=1;
     // let light=map(hit.distance,0,100,2,0.5);
@@ -161,13 +131,13 @@ function getColor(shape,hit,ray) {
         if (shadow_cast.hit && shadow_cast.hit.distance<dist3(shadow_cast.hit.hit_point,lightPos)) {
             // light=0;
         }
-        // let normal=new Vec3(hit.hit_normal)
-        // let light_norm=new Vec3(0,1,0)
-        // light=map(
-        //     dist2(normal.lat,normal.lon,light_norm.lat,light_norm.lon),
-        //     0,180,
-        //     1,0
-        // )
+        let normal=new Vec3(hit.hit_normal)
+        let light_norm=new Vec3(1,1,1)
+        light+=map(
+            dist2(normal.lat,normal.lon,light_norm.lat,light_norm.lon),
+            0,180,
+            1,0
+        )/2
     }
     
     let colorData=shape.color(hit,ray);
@@ -199,7 +169,7 @@ function getColor(shape,hit,ray) {
  * }}
  */
 function pixData(x,y) {
-    let pos=new CCT.Ray(new CCT.Vector3(0,0,0));
+    let pos=new CCT.Ray(new CCT.Vector3(-10,-5,20));
     // let dir=new CCT.Vector3(0,0,1);
     let projection=perspective(x,y);
 
