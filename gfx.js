@@ -182,9 +182,9 @@ function pixData(x,y) {
     let extra={};
 
     // let dir=new CCT.Vector3(0,0,1);
-    let samples=1;
+    let samples=5;
     for (let i=0;i<samples;i++) {
-        let projection=perspective(x,y,0);
+        let projection=perspective(x,y,1/6);
     
         let {shape,hit}=castRay(pos,projection.dir);
     
