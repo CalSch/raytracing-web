@@ -37,7 +37,7 @@ function reflection(hit,ray) {
     // else return [255,0,255];
     let colorData=getColor(shape,new_hit,ray)
     return {
-        color:lerpArray(colorData.light/6,[50,50,50],colorData.color),
+        color:lerpArray(colorData.light/6,[0,0,0],colorData.color),
 
         extra:{
             dir,

@@ -21,27 +21,18 @@ canvas_ctx.fillStyle = 'black';
 canvas_ctx.fillRect(0, 0, width * wscale, height * hscale);
 
 let paused = false;
-let currentX = 0;
-let currentY = 0;
+// let currentX = 0;
+// let currentY = 0;
 
 let mxEl=document.getElementById("mx");
 let myEl=document.getElementById("my");
 
-// let renderInt=setInterval(()=>{
-//     if (paused) return;
-//     let color=pix(currentX,currentY);
-//     ctx.fillStyle=`rgb(${color[0]},${color[1]},${color[2]})`;
-//     ctx.fillRect(currentX*wscale,currentY*hscale,wscale,hscale);
-
-//     currentX++;
-//     if (currentX>width) {
-//         currentX=0;
-//         currentY++;
-//     }
-//     if (currentY>height) {
-//         clearInterval(renderInt);
-//     }
-// },0);
+let colorEl=document.getElementById('color');
+let depthEl=document.getElementById('depth');
+let lightEl=document.getElementById('light');
+let normEl =document.getElementById('norm');
+let dispEls=[colorEl,depthEl,lightEl,normEl];
+let colorFunc=pixColor
 
 //#region Projection
 // From https://xem.github.io/articles/projection.html
@@ -94,6 +85,8 @@ let fps=0,ms=0;
 
 function render() {
     let locked=false;
+    let currentX = 0;
+    let currentY = 0;
     // let ray=false;
     function update() {
         // let color=ctx.getImageData(this.x*wscale,this.y*hscale,1,1).data;
@@ -114,6 +107,34 @@ function render() {
 
         this.data=data;
     }
+
+    dispEls.forEach((el)=>{
+        el.addEventListener('change',(ev)=>{
+            if (colorEl.checked)
+                colorFunc=pixColor;
+            else if (depthEl.checked)
+                colorFunc=(x,y)=> {
+                    let d=pixDepth(x,y);
+                    return [d,d,d]
+                }
+            else if (lightEl.checked)
+                colorFunc=(x,y)=> {
+                    let d=pixLight(x,y);
+                    return [d,d,d]
+                }
+            else if (normEl.checked)
+                colorFunc=(x,y)=> {
+                    let d=pixNormal(x,y);
+                    return [
+                        d.x*70,
+                        d.y*70,
+                        d.z*70
+                    ]
+                }
+            render();
+        })
+    })
+
     canvas.addEventListener('mousemove',function(ev){
         // this.locked=locked;
         if (locked)return;
@@ -194,7 +215,7 @@ function render() {
         // console.dir(ev.code)
     }.bind(this),true)
     function loop() {
-        let color = pixColor(currentX, currentY);
+        let color = colorFunc(currentX, currentY);
         image_ctx.fillStyle = `rgb(${color[0]},${color[1]},${color[2]})`;
         image_ctx.fillRect(currentX * wscale, currentY * hscale, wscale, hscale);
 

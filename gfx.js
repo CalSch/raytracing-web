@@ -38,9 +38,9 @@ let shapes=[
     },
     {
         name: "small_sphere",
-        shape: new CCT.Sphere(new CCT.Vector3(5,-9,55),2),
+        shape: new CCT.Sphere(new CCT.Vector3(-13,-8,40),2),
         color(hit,ray) {
-            return {color:[15,150,10]}
+            return {color:[145,10,80]}
         }
     },
     {
@@ -67,9 +67,10 @@ function ortho(x,y) {
     );
 }
 
-function perspective(x,y) {
-    let lat=map(x,0,width, xleft,xright);
-    let lon=map(y,0,height,yleft,yright);
+function perspective(x,y,jitter) {
+    jitter=jitter??0;
+    let lat=map(x,0,width, xleft,xright)+Math.random()*jitter;
+    let lon=map(y,0,height,yleft,yright)+Math.random()*jitter;
     let dir = polarToCartesian(lon,lat,1);
     let dx=dir.y,
         dy=dir.x,
@@ -116,7 +117,7 @@ function castRay(pos,dir,exclude) {
 function getColor(shape,hit,ray) {
     if (!hit) {
         let skyColor=lerpArray(-ray.lat/100,[255,0,0],[0,0,255])
-        return {light:1,
+        return {light:lerp(-ray.lon/30,1,2),
             color:lerpArray( -ray.lon/30, skyColor , [120,150,255] )
         }
     }
@@ -132,12 +133,12 @@ function getColor(shape,hit,ray) {
             // light=0;
         }
         let normal=new Vec3(hit.hit_normal)
-        let light_norm=new Vec3(1,1,1)
+        let light_norm=new Vec3(1,1,-1)
         light+=map(
             dist2(normal.lat,normal.lon,light_norm.lat,light_norm.lon),
             0,180,
             1,0
-        )/2
+        )
     }
     
     let colorData=shape.color(hit,ray);
@@ -146,6 +147,8 @@ function getColor(shape,hit,ray) {
 
     return {light,color,extra:colorData.extra};
 }
+
+let dataCache={};
 
 /**
  * 
@@ -169,10 +172,53 @@ function getColor(shape,hit,ray) {
  * }}
  */
 function pixData(x,y) {
+    if (`${x},${y}` in dataCache) {
+        return dataCache[`${x},${y}`];
+    }
     let pos=new CCT.Ray(new CCT.Vector3(-10,-5,20));
-    // let dir=new CCT.Vector3(0,0,1);
-    let projection=perspective(x,y);
 
+    let color=[0,0,0];
+    let light=0;
+    let extra={};
+
+    // let dir=new CCT.Vector3(0,0,1);
+    let samples=1;
+    for (let i=0;i<samples;i++) {
+        let projection=perspective(x,y,0);
+    
+        let {shape,hit}=castRay(pos,projection.dir);
+    
+        hit = hit || null;
+    
+        /** @type {Ray} */
+        let ray={
+            pos,
+            dir:projection.dir,
+            lat:projection.lat,
+            lon:projection.lon,
+        }
+    
+        let newColor=[0,0,0];
+        let newLight=0;
+        ({light:newLight,color:newColor}=getColor(shape,hit,ray));
+
+        newColor=newColor || [0,0,0];
+
+        color[0]+=newColor[0];
+        color[1]+=newColor[1];
+        color[2]+=newColor[2];
+        // color[1]+=100;
+        
+        light+=newLight;
+        // light/=2;
+    }
+
+    color[0]/=samples;
+    color[1]/=samples;
+    color[2]/=samples;
+
+    let projection=perspective(x,y);
+    
     let {shape,hit}=castRay(pos,projection.dir);
 
     hit = hit || null;
@@ -185,13 +231,22 @@ function pixData(x,y) {
         lon:projection.lon,
     }
 
-    let color=[0,0,0];
-    let light=0;
-    let extra={};
+    extra=getColor(shape,hit,ray).extra ?? {}
 
-    ({light,color,extra}=getColor(shape,hit,ray));
-    
-    extra=extra || {}
+    if (!(`${x},${y}` in dataCache)) {
+        dataCache[`${x},${y}`]={
+            ray: {
+                pos,
+                dir:projection.dir,
+                lat:projection.lat,
+                lon:projection.lon,
+            },
+            hit,
+            color,
+            light,
+            extra,
+        }
+    }
 
     return {
         ray: {
@@ -207,9 +262,42 @@ function pixData(x,y) {
     };
 }
 
+function pixDepth(x,y) {
+    let data=pixData(x,y)
+    let d=0;
+    if (data.hit && data.hit.distance) {
+        d=data.hit.distance;
+    }
+
+    return d;
+}
+
+function pixLight(x,y) {
+    let data=pixData(x,y)
+    let l=data.light*50;
+
+    return l;
+}
+
+function pixNormal(x,y) {
+    let data=pixData(x,y)
+    let n=new CCT.Vector3(0,0,0);
+    if (data.hit && data.hit.hit_normal) {
+        n=data.hit.hit_normal;
+    }
+    return new Vec3(n)
+}
+
 function pixColor(x,y) {
-    // post process
+    // let d=pixLight(x,y)
+    // let c=[d,d,d]
     let c=pixData(x,y).color;
+    // let n=pixNormal(x,y);
+    // let c=[
+    //     n.x*20,
+    //     n.y*20,
+    //     n.z*20
+    // ];
     // for (let i=0; i<3;i++) {
     //     if (c[i]<0) {
     //         c[(i-1)%3]+=Math.abs(c[i])/2;
