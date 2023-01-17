@@ -274,7 +274,7 @@ function pixDepth(x,y) {
 
 function pixLight(x,y) {
     let data=pixData(x,y)
-    let l=data.light*50;
+    let l=data.light*18;
 
     return l;
 }
